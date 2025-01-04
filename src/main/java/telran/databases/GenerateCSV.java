@@ -3,9 +3,10 @@ package telran.databases;
 import com.opencsv.CSVWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class GenerateCSV
 {
@@ -58,15 +59,17 @@ public class GenerateCSV
     private static void createEmployees(CSVWriter writer, Department department, Type type, int number_employee)
     {
         Random random = new Random();
+        LocalDate start = LocalDate.of(1960, Month.DECEMBER, 31);
+        LocalDate end = LocalDate.of(2005, Month.JANUARY, 1);
         for (int i = 0; i < number_employee; i++) {
             String[] row = new String[13];
             last_id++;
-            GregorianCalendar calendar = RandomGenerator(1960, 2005);
+            LocalDate birthday = between(start, end);
 
             row[0] = Integer.toString(last_id);
             row[1] = "Name " + last_id;
             row[2] = "Family_Name " + last_id;
-            row[3] = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.DAY_OF_MONTH);
+            row[3] = birthday.toString();
             row[4] = "+" + random.nextInt(1000000000);
             row[5] = String.valueOf(department);
             row[6] = String.valueOf(type);
@@ -94,13 +97,14 @@ public class GenerateCSV
         }
     }
 
-    private static GregorianCalendar RandomGenerator(int startYear, int endYear)
+    public static LocalDate between(LocalDate start_date_included, LocalDate end_date_excluded)
     {
-        Random rnd = new Random();
-        int year = startYear + rnd.nextInt(endYear - startYear);
-        int month = rnd.nextInt(12) + 1;
-        int day = rnd.nextInt(28) + 1;
+        long start_epoch_day = start_date_included.toEpochDay();
+        long end_epoch_day = end_date_excluded.toEpochDay();
+        long random_day = ThreadLocalRandom
+                .current()
+                .nextLong(start_epoch_day, end_epoch_day);
 
-        return new GregorianCalendar(year, month, day);
+        return LocalDate.ofEpochDay(random_day);
     }
 }
