@@ -58,6 +58,10 @@ public class GenerateCSV
 
     private static void createEmployees(CSVWriter writer, Department department, Type type, int number_employee)
     {
+        if (last_id + number_employee > 9999) {
+            throw new RuntimeException("Too many employees in the Company");
+        }
+
         Random random = new Random();
         LocalDate start = LocalDate.of(1960, Month.DECEMBER, 31);
         LocalDate end = LocalDate.of(2005, Month.JANUARY, 1);
